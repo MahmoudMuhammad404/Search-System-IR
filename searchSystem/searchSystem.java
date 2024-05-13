@@ -1,4 +1,5 @@
 package searchSystem;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,13 +39,11 @@ public class searchSystem {
         return false;
     }
 
-
-
     public static void main(String[] args) {
-        String fileName_1 = "Document_1.txt";
-        String fileName_2 = "Document_2.txt";
-        String fileName_3 = "Document_3.txt";
-        String fileName_4 = "Document_4.txt";
+        String fileName_1 = "./searchSystem/Document_1.txt";
+        String fileName_2 = "./searchSystem/Document_2.txt";
+        String fileName_3 = "./searchSystem/Document_3.txt";
+        String fileName_4 = "./searchSystem/Document_4.txt";
         String Document_1 = readFile(fileName_1);
         String Document_2 = readFile(fileName_2);
         String Document_3 = readFile(fileName_3);
@@ -70,8 +69,6 @@ public class searchSystem {
             System.out.print("Is The Document_" + (i + 1) + " Relevent to This Query ? ");
             System.out.println(boolSearch(query, Docs[i]));
         }
-
-
 
     }
 }
