@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class searchSystem {
 
@@ -37,6 +40,36 @@ public class searchSystem {
         return false;
     }
 
+    // 2) Statistical Model Method
+    public static double statModel(String query, String document) {
+        String[] q = query.toUpperCase().split(" "); // [A,B,C]
+        String[] doc = document.toUpperCase().split(" "); // [A,B,A,A,C,B,E,A]
+        double[] stat = new double[q.length + 1];
+        double score = 0;
+
+        for (int i = 0; i < q.length; i++) {
+            for (int j = 0; j < doc.length; j++) {
+                if (doc[j].equals(q[i])) {
+                    stat[i]++;
+                }
+            }
+            stat[i] = stat[i] / doc.length;
+            score += stat[i];
+        }
+        stat[stat.length - 1] = score;
+
+        for (int i = 0; i < stat.length; i++) {
+            if (i != stat.length - 1) {
+                System.out.println(stat[i]);
+            } else {
+                System.out.println("SCORE = " + stat[i]);
+            }
+        }
+
+        System.out.println();
+        return score;
+    }
+
     public static void main(String[] args) {
         String fileName_1 = "./Docs/Document_1.txt";
         String fileName_2 = "./Docs/Document_2.txt";
@@ -68,5 +101,33 @@ public class searchSystem {
             System.out.println(boolSearch(query, Docs[i]));
         }
 
+        // ---------------------------------------------------------
+
+        String q = "A B D";
+        String d1 = "A B A A C E B E";
+        String d2 = "A B B B B C B B B D D";
+        String d3 = "A B C C C D";
+        String d4 = "A B A A C E B E";
+
+        String[] dd = { d1, d2, d3, d4 };
+
+        List<Double> scores = new ArrayList<>();
+        for (int i = 0; i < dd.length; i++) {
+            double[] stat = { statModel(q, dd[i]) };
+            scores.add(stat[stat.length - 1]);
+        }
+
+        // Sort document indices based on scores
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < dd.length; i++) {
+            indices.add(i);
+        }
+        Collections.sort(indices, (a, b) -> scores.get(b).compareTo(scores.get(a)));
+
+        // Print the rank of documents
+        System.out.print("Rank :- ");
+        for (int i = 0; i < indices.size(); i++) {
+            System.out.print("d" + (indices.get(i) + 1) + " ");
+        }
     }
 }
