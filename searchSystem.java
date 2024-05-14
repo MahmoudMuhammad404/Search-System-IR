@@ -151,6 +151,42 @@ public class searchSystem {
         return result;
     }
 
+    // 5- Jaccard method
+    public static double jaccardMethod(String query, String document) {
+        // jaccard = query INTERSECTION document / query UNION document
+        String[] q = query.toUpperCase().split("\\s+");
+        String[] doc = document.toUpperCase().split("\\s+");
+
+        Set<String> querySet = new HashSet<>();
+        Set<String> documentSet = new HashSet<>();
+
+        for (int i = 0; i < q.length; i++) {
+            querySet.add(q[i]);
+        }
+        for (int i = 0; i < doc.length; i++) {
+            documentSet.add(doc[i]);
+        }
+
+        // Intersection of querySet and documentSet
+        Set<String> intersectionSet = new HashSet<>(querySet);
+        intersectionSet.retainAll(documentSet); // This line modifies intersectionSet to retain only the elements that
+                                                // are also in documentSet
+
+        // Union of querySet and documentSet
+        Set<String> unionSet = new HashSet<>(querySet);
+        unionSet.addAll(documentSet);
+        int intersection = intersectionSet.size();
+        int union = unionSet.size();
+
+        double result = (double) intersection / union;
+        System.out.println("A U B = " + union);
+        System.out.println("A ∩ B = " + intersection);
+
+        System.out.print("Jaccard(DOC,Q) = " + intersection + " / " + union + " = ");
+        return result;
+
+    }
+
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         String fileName_1 = "./Docs/Document_1.txt";
@@ -177,12 +213,21 @@ public class searchSystem {
         String query = "Hello brothers my name is mahmoud muhammad";
         String[] Docs = { Document_1, Document_2, Document_3, Document_4 };
 
+        /*
+         * String q7 = "Information retrieval";
+         * String d7 =
+         * "Language models are widely used in information retrieval for ranking documents"
+         * ;
+         * System.out.println(jaccardMethod(q7, d7));
+         */
+
         do {
             int choise;
             System.out.println("Enter Your Choise :- ");
             System.out.println("1-Boolean Search Model");
             System.out.println("2-Statistical Search Model");
             System.out.println("3-Cosine Similarity Method");
+            System.out.println("4-Jaccard Method");
             choise = in.nextInt();
             switch (choise) {
                 case 1:
@@ -221,6 +266,14 @@ public class searchSystem {
                     System.out.println("\nCOSINE-SIMILARITY :- ");
                     for (int i = 0; i < 4; i++) {
                         System.out.println(cosineSimilarity(query, Docs[i]));
+                        System.out.println();
+                    }
+                    System.out.println();
+                    break;
+                case 4:
+                    System.out.println("\nJACCARD-METHOD :- ");
+                    for (int i = 0; i < 4; i++) {
+                        System.out.println(jaccardMethod(query, Docs[i]));
                         System.out.println();
                     }
                     System.out.println();
