@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class searchSystem {
 
@@ -40,11 +42,12 @@ public class searchSystem {
         return false;
     }
 
-    // 2) Statistical Model Method
+    // 3) Statistical Model Method
     public static double statModel(String query, String document) {
-        String[] q = query.toUpperCase().split(" "); // [A,B,C]
-        String[] doc = document.toUpperCase().split(" "); // [A,B,A,A,C,B,E,A]
-        double[] stat = new double[q.length + 1];
+        String[] q = query.toUpperCase().split("\\s+"); // query = "Hello brothers my name is mahmoud muhammad"
+        String[] doc = document.toUpperCase().split("\\s+"); // Document_1 :- Hello brothers my name is mahmoud muhammad
+
+        double[] stat = new double[q.length];
         double score = 0;
 
         for (int i = 0; i < q.length; i++) {
@@ -56,18 +59,95 @@ public class searchSystem {
             stat[i] = stat[i] / doc.length;
             score += stat[i];
         }
-        stat[stat.length - 1] = score;
-
         for (int i = 0; i < stat.length; i++) {
-            if (i != stat.length - 1) {
-                System.out.println(stat[i]);
-            } else {
-                System.out.println("SCORE = " + stat[i]);
+            System.out.println(stat[i]);
+        }
+
+        System.out.println("SCORE = " + score);
+        System.out.println();
+        return score;
+    }
+
+    // 4) Cosine Similarity Method
+    public static double cosineSimilarity(String query, String document) {
+        String[] q = query.toUpperCase().split("\\s+");
+        String[] doc = document.toUpperCase().split("\\s+");
+        ArrayList<Integer> vectorArr1 = new ArrayList<>();
+        ArrayList<Integer> vectorArr2 = new ArrayList<>();
+
+        // Combine (q and doc) arrays into a single array
+        Set<String> combinedSet = new HashSet<>();
+
+        for (int i = 0; i < q.length; i++) {
+            combinedSet.add(q[i]);
+        }
+        for (int i = 0; i < doc.length; i++) {
+            combinedSet.add(doc[i]);
+        }
+        // Convert the set to an array
+        String[] combinedArray = combinedSet.toArray(new String[0]);
+
+        System.out.println("\nUnique Words :-");
+        for (int i = 0; i < combinedArray.length; i++) {
+            System.out.print(combinedArray[i] + " ");
+        }
+        System.out.println();
+
+        // Calculate the vector for the query
+        for (int i = 0; i < combinedArray.length; i++) {
+            boolean found = false;
+            for (int j = 0; j < q.length; j++) {
+                if (combinedArray[i].equals(q[j])) {
+                    vectorArr2.add(1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                vectorArr2.add(0);
             }
         }
 
+        // Calculate the vector for the document
+        for (int i = 0; i < combinedArray.length; i++) {
+            boolean found = false;
+            for (int j = 0; j < doc.length; j++) {
+                if (combinedArray[i].equals(doc[j])) {
+                    vectorArr1.add(1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                vectorArr1.add(0);
+            }
+        }
+
+        System.out.println("\nQuery Vector:");
+        for (int i = 0; i < vectorArr2.size(); i++) {
+            System.out.print(vectorArr2.get(i) + " ");
+        }
+
+        System.out.println("\nDocument Vector:");
+        for (int i = 0; i < vectorArr1.size(); i++) {
+            System.out.print(vectorArr1.get(i) + " ");
+        }
+
         System.out.println();
-        return score;
+
+        // calc dot product and magnitude
+        double dotProduct = 0;
+        double arr1MAG = 0;
+        double arr2MAG = 0;
+        for (int i = 0; i < vectorArr1.size(); i++) {
+            dotProduct += vectorArr1.get(i) * vectorArr2.get(i);
+            arr1MAG += Math.pow(vectorArr1.get(i), 2);
+            arr2MAG += Math.pow(vectorArr2.get(i), 2);
+        }
+        double result = dotProduct / (Math.sqrt(arr1MAG) * Math.sqrt(arr2MAG));
+
+        System.out.println("The Cosine Similarity between query and Document");
+        return result;
     }
 
     public static void main(String[] args) {
@@ -103,23 +183,25 @@ public class searchSystem {
 
         // ---------------------------------------------------------
 
-        String q = "A B D";
-        String d1 = "A B A A C E B E";
-        String d2 = "A B B B B C B B B D D";
-        String d3 = "A B C C C D";
-        String d4 = "A B A A C E B E";
+        /*
+         * String q = "A B D";
+         * String d1 = "A B A A C E B E";
+         * String d2 = "A B B B B C B B B D D";
+         * String d3 = "A B C C C D";
+         * String d4 = "A B A A C E B E";
+         */
 
-        String[] dd = { d1, d2, d3, d4 };
+        // String[] dd = { d1, d2, d3, d4 };
 
         List<Double> scores = new ArrayList<>();
-        for (int i = 0; i < dd.length; i++) {
-            double[] stat = { statModel(q, dd[i]) };
+        for (int i = 0; i < Docs.length; i++) {
+            double[] stat = { statModel(query, Docs[i]) };
             scores.add(stat[stat.length - 1]);
         }
 
         // Sort document indices based on scores
         List<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < dd.length; i++) {
+        for (int i = 0; i < Docs.length; i++) {
             indices.add(i);
         }
         Collections.sort(indices, (a, b) -> scores.get(b).compareTo(scores.get(a)));
@@ -129,5 +211,21 @@ public class searchSystem {
         for (int i = 0; i < indices.size(); i++) {
             System.out.print("d" + (indices.get(i) + 1) + " ");
         }
+
+        System.out.println();
+
+        // ------------------------------------------------------------
+
+        for (int i = 0; i < 4; i++) {
+            System.out.println(cosineSimilarity(query, Docs[i]));
+            System.out.println();
+        }
+
+        /*
+         * String q5 = "the quick brown fox";
+         * String doc5 = "the quick brown dog";
+         * System.out.println(cosineSimilarity(q5, doc5));
+         */
+
     }
 }
