@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Scanner;
 
 public class searchSystem {
 
@@ -151,6 +152,7 @@ public class searchSystem {
     }
 
     public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
         String fileName_1 = "./Docs/Document_1.txt";
         String fileName_2 = "./Docs/Document_2.txt";
         String fileName_3 = "./Docs/Document_3.txt";
@@ -175,11 +177,59 @@ public class searchSystem {
         String query = "Hello brothers my name is mahmoud muhammad";
         String[] Docs = { Document_1, Document_2, Document_3, Document_4 };
 
-        System.out.println("QUERY :- " + query + "\n");
-        for (int i = 0; i < 4; i++) {
-            System.out.print("Is The Document_" + (i + 1) + " Relevent to This Query ? ");
-            System.out.println(boolSearch(query, Docs[i]));
-        }
+        do {
+            int choise;
+            System.out.println("Enter Your Choise :- ");
+            System.out.println("1-Boolean Search Model");
+            System.out.println("2-Statistical Search Model");
+            System.out.println("3-Cosine Similarity Method");
+            choise = in.nextInt();
+            switch (choise) {
+                case 1:
+                    System.out.println("\nBOOLEAN-SEARCH-MODEL :- ");
+                    System.out.println("\nQUERY :- " + query + "\n");
+                    for (int i = 0; i < 4; i++) {
+                        System.out.print("Is The Document_" + (i + 1) + " Relevent to This Query ? ");
+                        System.out.println(boolSearch(query, Docs[i]));
+                    }
+                    System.out.println();
+                    break;
+                case 2:
+                    System.out.println("\nSTATISTICAL-SEARCH-MODEL :- ");
+                    System.out.println();
+                    List<Double> scores = new ArrayList<>();
+                    for (int i = 0; i < Docs.length; i++) {
+                        double[] stat = { statModel(query, Docs[i]) };
+                        scores.add(stat[stat.length - 1]);
+                    }
+
+                    // Sort document indices based on scores
+                    List<Integer> indices = new ArrayList<>();
+                    for (int i = 0; i < Docs.length; i++) {
+                        indices.add(i);
+                    }
+                    Collections.sort(indices, (a, b) -> scores.get(b).compareTo(scores.get(a)));
+
+                    // Print the rank of documents
+                    System.out.print("\nRank :- ");
+                    for (int i = 0; i < indices.size(); i++) {
+                        System.out.print("d" + (indices.get(i) + 1) + " ");
+                    }
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.println("\nCOSINE-SIMILARITY :- ");
+                    for (int i = 0; i < 4; i++) {
+                        System.out.println(cosineSimilarity(query, Docs[i]));
+                        System.out.println();
+                    }
+                    System.out.println();
+                    break;
+
+                default:
+                    System.out.println("Enter Valid choise");
+            }
+        } while (true);
 
         // ---------------------------------------------------------
 
@@ -193,33 +243,7 @@ public class searchSystem {
 
         // String[] dd = { d1, d2, d3, d4 };
 
-        List<Double> scores = new ArrayList<>();
-        for (int i = 0; i < Docs.length; i++) {
-            double[] stat = { statModel(query, Docs[i]) };
-            scores.add(stat[stat.length - 1]);
-        }
-
-        // Sort document indices based on scores
-        List<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < Docs.length; i++) {
-            indices.add(i);
-        }
-        Collections.sort(indices, (a, b) -> scores.get(b).compareTo(scores.get(a)));
-
-        // Print the rank of documents
-        System.out.print("Rank :- ");
-        for (int i = 0; i < indices.size(); i++) {
-            System.out.print("d" + (indices.get(i) + 1) + " ");
-        }
-
-        System.out.println();
-
         // ------------------------------------------------------------
-
-        for (int i = 0; i < 4; i++) {
-            System.out.println(cosineSimilarity(query, Docs[i]));
-            System.out.println();
-        }
 
         /*
          * String q5 = "the quick brown fox";
