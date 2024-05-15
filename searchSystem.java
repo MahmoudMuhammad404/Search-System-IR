@@ -188,7 +188,7 @@ public class searchSystem {
     }
 
     // 6) Likelihood_Model
-    public static void Likelihood_Model(String query, String document) {
+    public static double Likelihood_Model(String query, String document) {
         // Query: opacity lung right lob tumor brain
         String[] queryTerms = query.toUpperCase().split("\\s+");
         String[] doc = document.toUpperCase().split("\\s+");
@@ -221,6 +221,7 @@ public class searchSystem {
             System.out.println("Term: (" + terms[i] + ") Frequency: -->> " + docFrequencies.get(i));
         }
         System.out.println("P_MLE = " + P_MLE);
+        return P_MLE;
     }
 
     public static void main(String[] args) {
@@ -325,13 +326,39 @@ public class searchSystem {
                     System.out.println();
                     break;
                 case 5:
-                    System.out.println("\nLIKELHOOD_MODEL :- ");
-                    for (int i = 0; i < Docs.length; i++) {
-                        Likelihood_Model(query, Docs[i]);
-                        System.out.println();
-                    }
+                System.out.println("\nLIKELHOOD_MODEL :- ");
+
+                // eveluate P_MLE for each document and store it in an array
+                double[] pMLEs = new double[Docs.length];
+                for (int i = 0; i < Docs.length; i++) {
+                    pMLEs[i] = Likelihood_Model(query, Docs[i]);
                     System.out.println();
-                    break;
+                }
+                
+                // Sort the documents by P_MLE in desc order
+                for (int i = 0; i < Docs.length - 1; i++) {
+                    for (int j = i + 1; j < Docs.length; j++) {
+                        if (pMLEs[i] < pMLEs[j]) {
+                            // Swap docs
+                            String tempDoc = Docs[i];
+                            Docs[i] = Docs[j];
+                            Docs[j] = tempDoc;
+                            // Swap P_MLE values
+                            double tempPMLE = pMLEs[i];
+                            pMLEs[i] = pMLEs[j];
+                            pMLEs[j] = tempPMLE;
+                        }
+                    }
+                }
+                
+                // Print the sorted documents
+                for (int i = 0; i < Docs.length; i++) {
+                    System.out.println("Document: " + Docs[i]);
+                    System.out.println("P_MLE: " + pMLEs[i]);
+                    System.out.println();
+                }
+                System.out.println();
+                
 
                 default:
                     System.out.println("Enter Valid choise");
