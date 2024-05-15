@@ -26,15 +26,14 @@ public class searchSystem {
 
     // 2) Boolean Search Method
     public static boolean boolSearch(String query, String document) {
-        String[] q = query.toUpperCase().split(" ");
+        String[] q = query.toUpperCase().split("\\s+");
         // System.out.println(q[1]);
-        String[] doc = document.toUpperCase().split(" ");
+        String[] doc = document.toUpperCase().split("\\s+");
         // System.out.println(doc[1]);
 
-        for (int i = 0; i < Math.min(q.length, doc.length); i++) {
-            for (int j = 0; j < Math.min(q.length, doc.length); j++) {
+        for (int i = 0; i < q.length; i++) {
+            for (int j = 0; j < doc.length; j++) {
                 if (q[i].equals(doc[j])) {
-
                     return true;
                 }
             }
@@ -244,6 +243,13 @@ public class searchSystem {
     }
 
     // 11) Rank Power
+    public static double calcRankPower(int[] locationOfRelvDocs) {
+        int sum = 0;
+        for (int i = 0; i < locationOfRelvDocs.length; i++) {
+            sum += locationOfRelvDocs[i];
+        }
+        return (double) sum / Math.pow(locationOfRelvDocs.length, 2);
+    }
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
@@ -313,6 +319,7 @@ public class searchSystem {
             int truePositives = 30;
             int falsePositives = 10;
             int falseNegatives = 5;
+            int[] locationOfRelvDocs = new int[] { 1, 2, 4, 6, 13 };
             System.out.println("\nEnter Your Choise :- ");
             System.out.println("1-Boolean Search Model");
             System.out.println("2-Statistical Search Model");
@@ -406,6 +413,7 @@ public class searchSystem {
                         System.out.println();
                     }
                     System.out.println();
+                    break;
                 case 6:
                     System.out.println("\nCALCULATING PRECISION :- ");
                     System.out.println("TP = " + truePositives + " | " + "FP = " + falsePositives);
@@ -424,6 +432,10 @@ public class searchSystem {
                     double recall = calcRecall(truePositives, falseNegatives);
                     System.out.println("PERCISION = " + precision + " | " + "RECALL = " + recall);
                     System.out.println("f-measure = " + "PRECISION / RECALL = " + calcF_measure(precision, recall));
+                    break;
+                case 9:
+                    System.out.println("\nCALCULATING RANK-POWER :- ");
+                    System.out.println("rank-power = " + calcRankPower(locationOfRelvDocs));
                     break;
                 default:
                     System.out.println("Enter Valid choise");
