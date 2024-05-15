@@ -151,7 +151,7 @@ public class searchSystem {
         return result;
     }
 
-    // 5- Jaccard method
+    // 5) Jaccard method
     public static double jaccardMethod(String query, String document) {
         // jaccard = query INTERSECTION document / query UNION document
         String[] q = query.toUpperCase().split("\\s+");
@@ -187,6 +187,42 @@ public class searchSystem {
 
     }
 
+    // 6) Likelihood_Model
+    public static void Likelihood_Model(String query, String document) {
+        // Query: opacity lung right lob tumor brain
+        String[] queryTerms = query.toUpperCase().split("\\s+");
+        String[] doc = document.toUpperCase().split("\\s+");
+
+        // Create a unique set of query terms
+        Set<String> termsSet = new HashSet<>();
+        for (int i = 0; i < queryTerms.length; i++) {
+            termsSet.add(queryTerms[i]);
+        }
+
+        String[] terms = termsSet.toArray(new String[0]);
+
+        ArrayList<Double> docFrequencies = new ArrayList<>();
+        double P_MLE = 1.0;
+
+        for (int i = 0; i < terms.length; i++) {
+            double docFreq = 0;
+            for (int j = 0; j < doc.length; j++) {
+                if (doc[j].equals(terms[i])) {
+                    docFreq++;
+                }
+            }
+            double frequency = docFreq / doc.length;
+            docFrequencies.add(frequency);
+            P_MLE *= frequency;
+        }
+
+        // output term frequencies and P_MLE
+        for (int i = 0; i < docFrequencies.size(); i++) {
+            System.out.println("Term: (" + terms[i] + ") Frequency: -->> " + docFrequencies.get(i));
+        }
+        System.out.println("P_MLE = " + P_MLE);
+    }
+
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         String fileName_1 = "./Docs/Document_1.txt";
@@ -213,6 +249,8 @@ public class searchSystem {
         String query = "Hello brothers my name is mahmoud muhammad";
         String[] Docs = { Document_1, Document_2, Document_3, Document_4 };
 
+        System.out.println("\nQuery :- " + query);
+
         /*
          * String q7 = "Information retrieval";
          * String d7 =
@@ -221,19 +259,27 @@ public class searchSystem {
          * System.out.println(jaccardMethod(q7, d7));
          */
 
+        /*
+         * String qu = "opacity lung right lob tumor brain";
+         * String docc = "opacity lung right lob  ";
+         * System.out.println("likelhood : - ");
+         * Likelihood_Model(qu, docc);
+         */
+
         do {
             int choise;
-            System.out.println("Enter Your Choise :- ");
+            System.out.println("\nEnter Your Choise :- ");
             System.out.println("1-Boolean Search Model");
             System.out.println("2-Statistical Search Model");
             System.out.println("3-Cosine Similarity Method");
             System.out.println("4-Jaccard Method");
+            System.out.println("5-Likelihood Model");
             choise = in.nextInt();
             switch (choise) {
                 case 1:
                     System.out.println("\nBOOLEAN-SEARCH-MODEL :- ");
                     System.out.println("\nQUERY :- " + query + "\n");
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < Docs.length; i++) {
                         System.out.print("Is The Document_" + (i + 1) + " Relevent to This Query ? ");
                         System.out.println(boolSearch(query, Docs[i]));
                     }
@@ -264,7 +310,7 @@ public class searchSystem {
                     break;
                 case 3:
                     System.out.println("\nCOSINE-SIMILARITY :- ");
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < Docs.length; i++) {
                         System.out.println(cosineSimilarity(query, Docs[i]));
                         System.out.println();
                     }
@@ -272,8 +318,16 @@ public class searchSystem {
                     break;
                 case 4:
                     System.out.println("\nJACCARD-METHOD :- ");
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < Docs.length; i++) {
                         System.out.println(jaccardMethod(query, Docs[i]));
+                        System.out.println();
+                    }
+                    System.out.println();
+                    break;
+                case 5:
+                    System.out.println("\nLIKELHOOD_MODEL :- ");
+                    for (int i = 0; i < Docs.length; i++) {
+                        Likelihood_Model(query, Docs[i]);
                         System.out.println();
                     }
                     System.out.println();
