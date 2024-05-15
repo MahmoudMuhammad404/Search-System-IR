@@ -224,6 +224,27 @@ public class searchSystem {
         return P_MLE;
     }
 
+    // 7) Jelinek Mercer Smoothing
+
+    // 8) Precision Method
+    public static double calcPrecision(int truePositives, int falsePositives) {
+        // Precision = (relevent ∩ retrived) / retrived
+        return (double) truePositives / (truePositives + falsePositives);
+    }
+
+    // 9) Recall Method
+    public static double calcRecall(int truePositives, int falseNegatives) {
+        // Recall = (relevent) / All relevent docs retrived
+        return (double) truePositives / (truePositives + falseNegatives);
+    }
+
+    // 10) F-measure
+    public static double calcF_measure(double precision, double recall) {
+        return (2 * precision * recall) / (precision + recall);
+    }
+
+    // 11) Rank Power
+
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         String fileName_1 = "./Docs/Document_1.txt";
@@ -253,6 +274,26 @@ public class searchSystem {
         System.out.println("\nQuery :- " + query);
 
         /*
+         * int truePositives = 30;
+         * int falsePositives = 10;
+         * int falseNegatives = 5;
+         * 
+         * double precision = calcPrecision(truePositives, falsePositives);
+         * double recall = calcRecall(truePositives, falseNegatives);
+         * double F_measure = calcF_measure(precision, recall);
+         * System.out.println(precision);
+         * System.out.println(recall);
+         * System.out.println(F_measure);
+         * 
+         */
+        /*
+         * int[] relevant = new int[] { 0, 2, 3 };
+         * int[] retrieved = new int[] { 1, 0, 3, 2 };
+         * System.out.println("precision : -");
+         * System.out.println(calcPrecision(relevant, retrieved));
+         */
+
+        /*
          * String q7 = "Information retrieval";
          * String d7 =
          * "Language models are widely used in information retrieval for ranking documents"
@@ -269,12 +310,19 @@ public class searchSystem {
 
         do {
             int choise;
+            int truePositives = 30;
+            int falsePositives = 10;
+            int falseNegatives = 5;
             System.out.println("\nEnter Your Choise :- ");
             System.out.println("1-Boolean Search Model");
             System.out.println("2-Statistical Search Model");
             System.out.println("3-Cosine Similarity Method");
             System.out.println("4-Jaccard Method");
             System.out.println("5-Likelihood Model");
+            System.out.println("6-Calculate Precision");
+            System.out.println("7-Calculate Recall");
+            System.out.println("8-Calculate F-Measure");
+            System.out.println("9-Calculate Rank-Power");
             choise = in.nextInt();
             switch (choise) {
                 case 1:
@@ -326,40 +374,57 @@ public class searchSystem {
                     System.out.println();
                     break;
                 case 5:
-                System.out.println("\nLIKELHOOD_MODEL :- ");
+                    System.out.println("\nLIKELHOOD_MODEL :- ");
 
-                // eveluate P_MLE for each document and store it in an array
-                double[] pMLEs = new double[Docs.length];
-                for (int i = 0; i < Docs.length; i++) {
-                    pMLEs[i] = Likelihood_Model(query, Docs[i]);
-                    System.out.println();
-                }
-                
-                // Sort the documents by P_MLE in desc order
-                for (int i = 0; i < Docs.length - 1; i++) {
-                    for (int j = i + 1; j < Docs.length; j++) {
-                        if (pMLEs[i] < pMLEs[j]) {
-                            // Swap docs
-                            String tempDoc = Docs[i];
-                            Docs[i] = Docs[j];
-                            Docs[j] = tempDoc;
-                            // Swap P_MLE values
-                            double tempPMLE = pMLEs[i];
-                            pMLEs[i] = pMLEs[j];
-                            pMLEs[j] = tempPMLE;
+                    // eveluate P_MLE for each document and store it in an array
+                    double[] pMLEs = new double[Docs.length];
+                    for (int i = 0; i < Docs.length; i++) {
+                        pMLEs[i] = Likelihood_Model(query, Docs[i]);
+                        System.out.println();
+                    }
+
+                    // Sort the documents by P_MLE in desc order
+                    for (int i = 0; i < Docs.length - 1; i++) {
+                        for (int j = i + 1; j < Docs.length; j++) {
+                            if (pMLEs[i] < pMLEs[j]) {
+                                // Swap docs
+                                String tempDoc = Docs[i];
+                                Docs[i] = Docs[j];
+                                Docs[j] = tempDoc;
+                                // Swap P_MLE values
+                                double tempPMLE = pMLEs[i];
+                                pMLEs[i] = pMLEs[j];
+                                pMLEs[j] = tempPMLE;
+                            }
                         }
                     }
-                }
-                
-                // Print the sorted documents
-                for (int i = 0; i < Docs.length; i++) {
-                    System.out.println("Document: " + Docs[i]);
-                    System.out.println("P_MLE: " + pMLEs[i]);
-                    System.out.println();
-                }
-                System.out.println();
-                
 
+                    // Print the sorted documents
+                    for (int i = 0; i < Docs.length; i++) {
+                        System.out.println("Document: " + Docs[i]);
+                        System.out.println("P_MLE: " + pMLEs[i]);
+                        System.out.println();
+                    }
+                    System.out.println();
+                case 6:
+                    System.out.println("\nCALCULATING PRECISION :- ");
+                    System.out.println("TP = " + truePositives + " | " + "FP = " + falsePositives);
+                    System.out.println("precision = (TP / (TP + FP) ) = " + truePositives + " / " + truePositives
+                            + " + " + falsePositives + " = " + calcPrecision(truePositives, falsePositives));
+                    break;
+                case 7:
+                    System.out.println("\nCALCULATING RECALL :- ");
+                    System.out.println("TP = " + truePositives + " | " + "FP = " + falsePositives);
+                    System.out.println("recall = (TP / (TP + FN) ) = " + truePositives + " / " + truePositives
+                            + " + " + falseNegatives + " = " + calcRecall(truePositives, falseNegatives));
+                    break;
+                case 8:
+                    System.out.println("\nCALCULATING F-MEASURE :- ");
+                    double precision = calcPrecision(truePositives, falsePositives);
+                    double recall = calcRecall(truePositives, falseNegatives);
+                    System.out.println("PERCISION = " + precision + " | " + "RECALL = " + recall);
+                    System.out.println("f-measure = " + "PRECISION / RECALL = " + calcF_measure(precision, recall));
+                    break;
                 default:
                     System.out.println("Enter Valid choise");
             }
